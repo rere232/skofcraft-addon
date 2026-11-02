@@ -1,0 +1,33 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+
+# Songs and reference files stay on your own machine, never in the repo or the jar
+*.mid
+*.midi
+.tmp
+
+# Files from Forge MDK
+forge*changelog.txt
+
+# local debug mods (remapped via fg.deobf in build.gradle)
+libs

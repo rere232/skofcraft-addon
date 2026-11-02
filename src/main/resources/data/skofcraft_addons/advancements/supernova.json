@@ -1,0 +1,23 @@
+{
+  "parent": "skofcraft:giga_icbm",
+  "display": {
+    "icon": {
+      "item": "skofcraft:giga_icbm"
+    },
+    "title": {
+      "translate": "advancements.skofcraft_addons.supernova.title"
+    },
+    "description": {
+      "translate": "advancements.skofcraft_addons.supernova.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "ignited": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
