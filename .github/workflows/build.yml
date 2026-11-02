@@ -1,0 +1,52 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # The addon compiles against SKOFCRAFT from Maven Local, which is empty on a fresh runner
+      - name: Checkout SKOFCRAFT
+        uses: actions/checkout@v4
+        with:
+          repository: rere232/skofcraft
+          path: skofcraft-src
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Publish SKOFCRAFT to Maven Local
+        working-directory: skofcraft-src
+        run: bash ./gradlew publishToMavenLocal
+
+      - name: Build mod
+        run: bash ./gradlew build
+
+      # Without the song the mod still works and quietly plays the campfire song, so fail here rather than ship that
+      - name: Check the song is in the jar
+        run: |
+          JAR="build/libs/skofcraft_addons-$(grep '^mod_version=' gradle.properties | cut -d= -f2 | tr -d '\r').jar"
+          unzip -l "$JAR" | grep -F 'data/skofcraft_addons/songs/band.mid'
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: skofcraft-addons-${{ github.sha }}
+          path: build/libs/*.jar
+          if-no-files-found: error

@@ -21,9 +21,10 @@ build
 eclipse
 run
 
-# Songs and reference files stay on your own machine, never in the repo or the jar
+# Songs and reference files stay on your own machine, except the band's song, which ships in the jar
 *.mid
 *.midi
+!src/main/resources/data/skofcraft_addons/songs/band.mid
 .tmp
 
 # Files from Forge MDK

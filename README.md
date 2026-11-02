@@ -8,10 +8,10 @@ on Minecraft 1.20.1 with Forge 47.4 or newer.
 **The Campfire Band.** A Whistle, Drums, a Banjo, a Flute, a Harmonica and a Travel Piano, each playing one part of the
 same song. Right-click to play and again to stop. Anyone who starts later comes in on the current beat automatically.
 
-To have them play a MIDI file of your own, put it at `config/skofcraft_addons/band.mid` on the server (or in your
-singleplayer game folder) and run `/reload`. Only the server needs it. Parts go to instruments by their General MIDI sound,
-and anything else goes to whichever instrument is free. Without a file they play the campfire song,
-`data/skofcraft_addons/songs/campfire.json`, which a data pack can replace.
+They play the MIDI song in the jar, `data/skofcraft_addons/songs/band.mid`, which a data pack can replace. Parts go to
+instruments by their General MIDI sound, and anything else goes to whichever instrument is free. If the MIDI song is
+missing or can't be read they play the campfire song, `data/skofcraft_addons/songs/campfire.json`, which a data pack can
+also replace.
 
 Operators can run a bare `/playsound` to hear all of the campfire song once, and again to stop it. Vanilla's
 `/playsound <sound> ...` still works as usual.

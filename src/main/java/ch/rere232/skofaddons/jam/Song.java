@@ -22,13 +22,13 @@ import java.util.Map;
 /**
  * A song for the band. The campfire song is read from {@code data/skofcraft_addons/songs/campfire.json} so a data pack
  * can replace it: each part is a list of {@code [step, note]} pairs, and {@link Instrument#soundFor} says what the notes
- * mean. The instruments play it unless the server has its own file; see {@link MidiSong}.
+ * mean. The instruments play the MIDI song instead whenever it loads; see {@link MidiSong}.
  */
 public final class Song {
     private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(SkofAddonsMod.MODID, "campfire");
     private static final int[] NO_NOTES = new int[0];
     private static Song campfire;
-    private static Song fromConfig;
+    private static Song midi;
 
     private final int ticksPerStep;
     private final int steps;
@@ -42,7 +42,7 @@ public final class Song {
 
     /** What the instruments play. May be null if there is no song at all. */
     public static Song current() {
-        return fromConfig != null ? fromConfig : campfire;
+        return midi != null ? midi : campfire;
     }
 
     /** May be null if the song file is missing or broken. */
@@ -118,7 +118,7 @@ public final class Song {
 
         @Override
         protected void apply(Map<ResourceLocation, JsonElement> files, ResourceManager manager, ProfilerFiller profiler) {
-            fromConfig = MidiSong.load();
+            midi = MidiSong.load(manager);
             campfire = null;
             JsonElement file = files.get(ID);
             if (file == null) {

@@ -1,7 +1,9 @@
 package ch.rere232.skofaddons.jam;
 
 import ch.rere232.skofaddons.SkofAddonsMod;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
@@ -11,9 +13,9 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -21,15 +23,16 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Lets the band play a MIDI file from the server's config folder. The file is read when data loads, so {@code /reload}
- * picks up a new one, and it is never part of the mod: only the server needs it, since clients just hear the sounds.
+ * The band's MIDI song, {@code data/skofcraft_addons/songs/band.mid}. It ships in the jar and is read when data loads,
+ * so a data pack can replace it and {@code /reload} picks up the change.
  */
 final class MidiSong {
-    private static final String FILE = "skofcraft_addons/band.mid";
+    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(SkofAddonsMod.MODID, "songs/band.mid");
     private static final int GAME_TICKS_PER_SECOND = 20;
     private static final int PERCUSSION_CHANNEL = 9;
     private static final int LOWEST_KEY = 54; // F#3, which is note 0
@@ -38,18 +41,19 @@ final class MidiSong {
 
     private MidiSong() {}
 
-    /** The song in the config folder, or null if there is none or it can't be read. */
-    static Song load() {
-        Path path = FMLPaths.CONFIGDIR.get().resolve(FILE);
-        if (!Files.isRegularFile(path)) {
+    /** The MIDI song, or null if there is none or it can't be read. */
+    static Song load(ResourceManager manager) {
+        Optional<Resource> resource = manager.getResource(ID);
+        if (resource.isEmpty()) {
             return null;
         }
-        try {
-            Song song = read(MidiSystem.getSequence(path.toFile()));
-            SkofAddonsMod.LOGGER.info("The band is playing {}", path);
+        // MidiSystem needs a stream it can rewind, which a resource's own stream may not be
+        try (InputStream stream = new BufferedInputStream(resource.get().open())) {
+            Song song = read(MidiSystem.getSequence(stream));
+            SkofAddonsMod.LOGGER.info("The band is playing {}", ID);
             return song;
         } catch (InvalidMidiDataException | IOException | RuntimeException e) {
-            SkofAddonsMod.LOGGER.error("Couldn't read {}, the band is playing its own song instead", path, e);
+            SkofAddonsMod.LOGGER.error("Couldn't read {}, the band is playing the campfire song instead", ID, e);
             return null;
         }
     }
